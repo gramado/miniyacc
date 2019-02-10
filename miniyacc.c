@@ -1279,7 +1279,7 @@ void init (int ac, char *av[]){
 					break;
 			default:
 			usage:
-				fputs("usage: myacc [-vd] [-b file_prefix] grammar\n", stderr);
+				fputs("usage: miniyacc [-vd] [-b file_prefix] grammar\n", stderr);
 				exit(1);
 			}
 

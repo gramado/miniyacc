@@ -10,11 +10,13 @@
  *      clang version 7.0.1  
  */
 
+
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 typedef int Sym;
 typedef struct Rule Rule;
@@ -24,10 +26,12 @@ typedef struct Term Term;
 typedef struct Item Item;
 typedef struct Row Row;
 
+
 #define S ((Sym) -1)
 #define Red(n) (- (n+2)) /* involutive, Red(Red(x)) == x */
 #define GetBit(s,n) (s[n/32] & (1<<(n%32)))
 #define SetBit(s,n) (s[n/32] |= 1<<(n%32))
+
 
 enum {
 	IdntSz = 64,
@@ -41,6 +45,7 @@ enum {
 	Sym0 = MaxTk
 };
 
+
 struct Rule {
 	Sym lhs;
 	Sym rhs[MaxRhs];
@@ -49,9 +54,11 @@ struct Rule {
 	int prec;
 };
 
+
 struct TSet {
 	unsigned t[TSetSz];
 };
+
 
 struct Info {
 	int nul;
@@ -67,11 +74,13 @@ struct Info {
 	char type[IdntSz];
 };
 
+
 struct Term {
 	Rule *rule;
 	int dot;
 	TSet lk;
 };
+
 
 struct Item {
 	int id;
@@ -87,8 +96,10 @@ struct Row {
 	int *t;
 };
 
+
 char srs[] = "shift/reduce conflict state %d token %s\n";
 char rrs[] = "reduce/reduce conflict state %d token %s\n";
+
 
 Item i0; /* temporary item */
 
@@ -116,16 +127,17 @@ FILE *fout;
 FILE *fgrm;
 FILE *fhdr;
 
-void
-die(char *s)
-{
-	fprintf(stderr, "%s (on line %d)\n", s, lineno);
-	exit(1);
+
+
+void die (char *s){
+	
+	fprintf (stderr, "%s (on line %d)\n", s, lineno);
+	exit (1);
 }
 
-void *
-yalloc(size_t n, size_t o)
-{
+
+void *yalloc (size_t n, size_t o){
+	
 	void *p;
 
 	p = calloc(n, o);
@@ -134,44 +146,46 @@ yalloc(size_t n, size_t o)
 	return p;
 }
 
-int
-rcmp(const void *a, const void *b)
-{
+
+int rcmp (const void *a, const void *b){
+	
 	return ((Rule *)a)->lhs - ((Rule *)b)->lhs;
 }
 
-Rule *
-rfind(Sym lhs)
-{
+
+Rule *rfind (Sym lhs){
+	
 	Rule *r;
 	Rule k;
 
 	k.lhs = lhs;
+	
 	r = bsearch(&k, rs, nrl, sizeof *r, rcmp);
+	
 	if (r != 0)
 		while (r > rs && r[-1].lhs == lhs)
 			r--;
 	return r;
 }
 
-int
-slen(Sym *l)
-{
+
+int slen (Sym *l){
+	
 	int n;
 
 	for (n=0; *l!=S; n++, l++);
 	return n;
 }
 
-void
-tszero(TSet *ts)
-{
-	memset(ts, 0, sizeof *ts);
+
+void tszero(TSet *ts){
+	
+	memset (ts, 0, sizeof *ts);
 }
 
-int
-tsunion(TSet *tsa, TSet *tsb)
-{
+
+int tsunion (TSet *tsa, TSet *tsb){
+	
 	int n;
 	unsigned *a, *b, c, t;
 
@@ -207,9 +221,9 @@ first(TSet *ts, Sym *stnc, TSet *last)
 	tsunion(ts, &is[f].fst);
 }
 
-void
-ginit()
-{
+
+void ginit (){
+	
 	int chg;
 	Rule *r;
 	Info *i;
@@ -635,21 +649,25 @@ actgen()
 	free(o);
 }
 
-void
-aout(char *name, int *t, int n)
-{
+
+void aout (char *name, int *t, int n){
+	
 	int i;
 
 	fprintf(fout, "short %s[] = {", name);
-	for (i=0; i<n; i++) {
+	
+	for (i=0; i<n; i++) 
+	{
 		if (i % 10 == 0)
 			fprintf(fout, "\n");
 		fprintf(fout, "%4d", t[i]);
 		if (i != n-1)
 			fprintf(fout, ",");
 	}
+	
 	fprintf(fout, "\n};\n");
 }
+
 
 void
 tblout()
@@ -781,6 +799,7 @@ enum {
 	TEof
 };
 
+
 struct {
 	char *name;
 	int tok;
@@ -797,17 +816,18 @@ struct {
 	{ 0, 0 }
 };
 
+
 char idnt[IdntSz];
 
-int
-istok(int c)
-{
+
+int istok (int c){
+	
 	return isalnum(c) || c=='_' || c=='%';
 }
 
-int
-nexttk()
-{
+
+int nexttk (){
+	
 	int n;
 	char c, *p;
 
@@ -856,6 +876,7 @@ nexttk()
 	return TIdnt;
 }
 
+
 char *
 cpycode()
 {
@@ -896,9 +917,9 @@ cpycode()
 	return s;
 }
 
-int
-gettype(char *type)
-{
+
+int gettype (char *type){
+	
 	int tk;
 
 	tk = nexttk();
@@ -914,6 +935,7 @@ gettype(char *type)
 		return tk;
 	}
 }
+
 
 Sym
 findsy(char *name, int add)
@@ -1210,9 +1232,9 @@ actout(Rule *r)
 	fputs("\n", fout);
 }
 
-void
-codeout()
-{
+
+void codeout (){
+	
 	extern char *code0[], *code1[];
 	char **p;
 	Rule *r;
@@ -1234,9 +1256,9 @@ codeout()
 		fputc(c, fout);
 }
 
-void
-init(int ac, char *av[])
-{
+
+void init (int ac, char *av[]){
+	
 	int c, vf, df;
 	char *pref, buf[100], *opt;
 
@@ -1284,11 +1306,16 @@ init(int ac, char *av[])
 		die("cannot open work files");
 }
 
-int
-main(int ac, char *av[])
-{
 
+/*
+ ******************************
+ * main
+ */
+
+int main (int ac, char *av[]){
+	
 	init(ac, av);
+	
 	getdecls();
 	getgram();
 	ginit();
@@ -1301,17 +1328,21 @@ main(int ac, char *av[])
 
 	if (srconf)
 		fprintf(stderr, "%d shift/reduce conflicts\n", srconf);
+	
 	if (rrconf)
 		fprintf(stderr, "%d reduce/reduce conflicts\n", rrconf);
 
-	exit(0);
+	exit (0);
 }
+
 
 /* Glorious macros.
 	|sed 's|.*|"&\\n",|'
 */
 
+
 char *retcode = "\t\tyyval = ps[1].val; return 0;";
+
 
 char *code0[] = {
 "\n",
@@ -1378,9 +1409,11 @@ char *code0[] = {
 0
 };
 
+
 char *code1[] = {
-"	}\n",
-"	goto stack;\n",
-"}\n",
-0
+    "	}\n",
+    "	goto stack;\n",
+    "}\n",
+    0
 };
+

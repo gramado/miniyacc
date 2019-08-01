@@ -877,11 +877,10 @@ int nexttk (){
 }
 
 
-char *
-cpycode()
-{
-	int c, nest, in, len, pos;
-	char *s;
+char *cpycode (){
+
+    int c, nest, in, len, pos;
+    char *s;
 
 	len = 64;
 	s = yalloc(len+1, 1);
@@ -891,7 +890,9 @@ cpycode()
 	in = 0;
 
 	while (nest) {
+
 		c = fgetc(fin);
+
 		if (in) {
 			if (c == in)
 			if (s[pos-1] != '\\')
@@ -914,12 +915,14 @@ cpycode()
 		s[pos++] = c;
 	}
 	s[pos] = 0;
-	return s;
+
+
+    return s;
 }
 
 
 int gettype (char *type){
-	
+
 	int tk;
 
 	tk = nexttk();
@@ -1332,7 +1335,8 @@ int main (int ac, char *av[]){
 	if (rrconf)
 		fprintf(stderr, "%d reduce/reduce conflicts\n", rrconf);
 
-	exit (0);
+
+    exit (0);
 }
 
 

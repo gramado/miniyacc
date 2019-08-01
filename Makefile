@@ -9,7 +9,8 @@ compile:
 	clang -g -Wall -Wextra miniyacc.c -o miniyacc
     	
 test:
-	./miniyacc testfiles/t.y
+	./miniyacc testfiles/c89.y
+#	./miniyacc testfiles/t.y
 	
 clean:
 	rm *.o
